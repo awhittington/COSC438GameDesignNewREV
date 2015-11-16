@@ -14,7 +14,7 @@ namespace Minigame3
         Texture2D map, mouseTexture, bill;
         Vector2 mouseXY, objectXY;
         Rectangle[] getrect;
-        float rotationCounter;
+        float[] rotationCounter = {0, 0};
         bool explanationVisibility;
 
         public Game1()
@@ -32,7 +32,6 @@ namespace Minigame3
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            rotationCounter = 0f;
             base.Initialize();
         }
 
@@ -48,6 +47,9 @@ namespace Minigame3
             mouseTexture = Content.Load<Texture2D>("cursor");
             getrect = new Rectangle[2];
             getrect[0] = new Rectangle(0, 0, map.Width / 2, map.Height);
+            getrect[1] = new Rectangle(map.Width / 2, 0, map.Width / 2, map.Height);
+            rotationCounter[0] = 0f;
+            rotationCounter[1] = 0f;
 
             bill = Content.Load<Texture2D>("bill");
             explanationVisibility = false;
@@ -89,14 +91,12 @@ namespace Minigame3
             }
             
             //when they click, rotate map components accordingly
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed){
-                //rotationCounter+=MathHelper.Pi;
-            }
 
-
-            foreach (Rectangle rect in getrect){
-                if (rect.Contains(mouseXY) && Mouse.GetState().LeftButton==ButtonState.Pressed){
-                    rotationCounter+=MathHelper.Pi;
+            for (int i = 0; i < 2; i++)
+            {
+                if (getrect[i].Contains(mouseXY) && Mouse.GetState().LeftButton == ButtonState.Pressed)
+                {
+                    rotationCounter[i] += MathHelper.Pi;
                 }
             }
             
@@ -115,11 +115,8 @@ namespace Minigame3
             // TODO: Add your drawing code here
             spriteBatch.Begin();
             //the rotation origin vector works relative to the cropped image, but scale is...??
-            //spriteBatch.Draw(map, new Vector2(100, 100), new Rectangle(50, 50, 300, 300), Color.White, rotationCounter, new Vector2(150, 150), .1f, SpriteEffects.None, 0f);
-            
-            //spriteBatch.Draw(map, new Vector2(87.5f, 175f), new Rectangle(0, 0, map.Width/2, map.Height), Color.White, rotationCounter, new Vector2(map.Width/4, map.Height/2), .05f, SpriteEffects.None, 0f);
-            spriteBatch.Draw(map, new Vector2(87.5f, 175f), getrect[0], Color.White, rotationCounter, new Vector2(map.Width/4, map.Height/2), .05f, SpriteEffects.None, 0f);
-            //spriteBatch.Draw(map, new Vector2(180f+87.5f, 175f), new Rectangle(map.Width/2, 0, map.Width/2, map.Height), Color.White, rotationCounter, new Vector2(map.Width/4, map.Height/2), .05f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(map, new Vector2(87.5f, 175f), getrect[0], Color.White, rotationCounter[0], new Vector2(map.Width/4, map.Height/2), .05f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(map, new Vector2(180f+87.5f, 175f), getrect[1], Color.White, rotationCounter[1], new Vector2(map.Width/4, map.Height/2), .05f, SpriteEffects.None, 0f);
             
             spriteBatch.Draw(mouseTexture, mouseXY, new Rectangle(0, 0, mouseTexture.Width, mouseTexture.Height), Color.White);
 
