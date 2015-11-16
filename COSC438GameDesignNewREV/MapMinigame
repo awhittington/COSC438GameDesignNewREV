@@ -1,0 +1,143 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+
+namespace Minigame3
+{
+    /// <summary>
+    /// This is the main type for your game.
+    /// </summary>
+    public class Game1 : Game
+    {
+        GraphicsDeviceManager graphics;
+        SpriteBatch spriteBatch;
+        Texture2D map, mouseTexture, bill;
+        Vector2 mouseXY, objectXY;
+        Rectangle[] getrect;
+        float rotationCounter;
+        bool explanationVisibility;
+
+        public Game1()
+        {
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
+        }
+
+        /// <summary>
+        /// Allows the game to perform any initialization it needs to before starting to run.
+        /// This is where it can query for any required services and load any non-graphic
+        /// related content.  Calling base.Initialize will enumerate through any components
+        /// and initialize them as well.
+        /// </summary>
+        protected override void Initialize()
+        {
+            // TODO: Add your initialization logic here
+            rotationCounter = 0f;
+            base.Initialize();
+        }
+
+        /// <summary>
+        /// LoadContent will be called once per game and is the place to load
+        /// all of your content.
+        /// </summary>
+        protected override void LoadContent()
+        {
+            // Create a new SpriteBatch, which can be used to draw textures.
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            map = Content.Load<Texture2D>("mapdelveDOTcomSLASHimagesSLASHtunnels2");
+            mouseTexture = Content.Load<Texture2D>("cursor");
+            getrect = new Rectangle[2];
+            getrect[0] = new Rectangle(0, 0, map.Width / 2, map.Height);
+
+            bill = Content.Load<Texture2D>("bill");
+            explanationVisibility = false;
+
+            objectXY = new Vector2(300, 400);
+            // TODO: use this.Content to load your game content here
+        }
+
+        /// <summary>
+        /// UnloadContent will be called once per game and is the place to unload
+        /// game-specific content.
+        /// </summary>
+        protected override void UnloadContent()
+        {
+            Content.Unload();
+        }
+
+        /// <summary>
+        /// Allows the game to run logic such as updating the world,
+        /// checking for collisions, gathering input, and playing audio.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Update(GameTime gameTime)
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+
+            // TODO: Add your update logic here
+            mouseXY = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+            
+            //if cursor is close to object, hover explanation
+            if (MathHelper.Distance(mouseXY.X, objectXY.X) <= 100)
+            {
+                explanationVisibility = true;
+            }
+            else
+            {
+                explanationVisibility = false;
+            }
+            
+            //when they click, rotate map components accordingly
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed){
+                //rotationCounter+=MathHelper.Pi;
+            }
+
+
+            foreach (Rectangle rect in getrect){
+                if (rect.Contains(mouseXY) && Mouse.GetState().LeftButton==ButtonState.Pressed){
+                    rotationCounter+=MathHelper.Pi;
+                }
+            }
+            
+            
+            base.Update(gameTime);
+        }
+
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.Purple);
+
+            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+            //the rotation origin vector works relative to the cropped image, but scale is...??
+            //spriteBatch.Draw(map, new Vector2(100, 100), new Rectangle(50, 50, 300, 300), Color.White, rotationCounter, new Vector2(150, 150), .1f, SpriteEffects.None, 0f);
+            
+            //spriteBatch.Draw(map, new Vector2(87.5f, 175f), new Rectangle(0, 0, map.Width/2, map.Height), Color.White, rotationCounter, new Vector2(map.Width/4, map.Height/2), .05f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(map, new Vector2(87.5f, 175f), getrect[0], Color.White, rotationCounter, new Vector2(map.Width/4, map.Height/2), .05f, SpriteEffects.None, 0f);
+            //spriteBatch.Draw(map, new Vector2(180f+87.5f, 175f), new Rectangle(map.Width/2, 0, map.Width/2, map.Height), Color.White, rotationCounter, new Vector2(map.Width/4, map.Height/2), .05f, SpriteEffects.None, 0f);
+            
+            spriteBatch.Draw(mouseTexture, mouseXY, new Rectangle(0, 0, mouseTexture.Width, mouseTexture.Height), Color.White);
+
+            if(explanationVisibility == true){
+                //spriteBatch.Draw(bill, mouseXY, new Rectangle(0, 0, bill.Width, bill.Height), Color.White, 0f, new Vector2(0,0), .5f, SpriteEffects.None, 0f);
+            }
+            spriteBatch.End();
+            base.Draw(gameTime);
+        }
+    }
+}
+
+/*
+from 0 to 4 inclusive for stripIndex:
+	switch(characterClass)
+	basic:
+		from 0 to 4 inclusive for blockIndex:
+			draw(100*stripIndex, 100*blockIndex, 100, 100)
+	expert:
+		draw(100*stripIndex, 0, 100, 500)
+ */
